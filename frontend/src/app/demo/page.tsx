@@ -8,26 +8,34 @@ import { MetricsPanel } from '@/components/demo/MetricsPanel';
 import { CloudOverlay } from '@/components/demo/CloudOverlay';
 import { ProcessingStatus } from '@/components/demo/ProcessingStatus';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { useCloudRemoval } from '@/hooks/useCloudRemoval';
 import { SENSOR_OPTIONS, CLOUD_MASK_METHODS, MODEL_OPTIONS } from '@/lib/constants';
+
+// ── Dark select styles applied globally via inline style ──────────────────────
+const selectClass = [
+  'w-full text-[12.5px] rounded px-3 py-2 font-mono',
+  'bg-[rgba(5,10,20,0.9)] text-[rgba(226,232,244,0.8)]',
+  'border border-[rgba(0,212,255,0.15)]',
+  'focus:outline-none focus:border-[rgba(0,212,255,0.45)]',
+  'disabled:opacity-40 transition-colors',
+].join(' ');
 
 export default function DemoPage() {
   const [sensor, setSensor] = useState(SENSOR_OPTIONS[0].value);
   const [maskMethod, setMaskMethod] = useState(CLOUD_MASK_METHODS[0].value);
   const [model, setModel] = useState(MODEL_OPTIONS[0].value);
-  
-  const { 
-    files: cloudyFiles, 
-    addFiles: addCloudyFile, 
+
+  const {
+    files: cloudyFiles,
+    addFiles: addCloudyFile,
     clear: clearCloudy,
-    error: cloudyError
+    error: cloudyError,
   } = useFileUpload(1);
-  
-  const { 
-    files: refFiles, 
-    addFiles: addRefFiles, 
+
+  const {
+    files: refFiles,
+    addFiles: addRefFiles,
     removeFile: removeRefFile,
   } = useFileUpload(3);
 
@@ -47,157 +55,212 @@ export default function DemoPage() {
 
   const handleReset = () => {
     clearCloudy();
-    // refFiles are kept intentionally to allow trying another cloudy image with same refs
     reset();
   };
 
+  const isRunning = state.status === 'uploading' || state.status === 'processing';
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-6 py-10 max-w-6xl">
+
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight mb-2">
-          Cloud Removal Inference
+        <div className="terminal-label mb-2">Inference Console</div>
+        <h1 className="text-3xl font-bold text-white tracking-tight mb-2">
+          Cloud Removal
         </h1>
-        <p className="text-gray-600 max-w-3xl">
-          Upload a cloudy LISS-IV or Sentinel-2 tile and watch the multi-temporal diffusion model reconstruct the missing data.
+        <p className="text-[13.5px] text-[rgba(226,232,244,0.45)] max-w-2xl">
+          Upload a cloudy LISS-IV or Sentinel-2 tile and watch the multi-temporal
+          diffusion model reconstruct missing spectral data.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
-        {/* Left Column: Controls & Inputs */}
-        <div className="lg:col-span-5 space-y-6">
-          <Card className="border-gray-200">
-            <CardContent className="pt-6">
-              
-              {/* Target File */}
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-800 mb-3">1. Target Tile (Cloudy)</h3>
-                <UploadZone 
-                  onDrop={addCloudyFile}
-                  file={cloudyFiles[0] || null}
-                  onClear={() => { clearCloudy(); reset(); }}
-                  error={cloudyError}
-                />
-              </div>
+      <div className="grid lg:grid-cols-12 gap-6">
 
-              {/* Reference Files */}
-              <div className="mb-6 pt-6 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-800 mb-3">2. Context (Optional but recommended)</h3>
-                <ReferenceStack 
-                  references={refFiles}
-                  onAdd={addRefFiles}
-                  onRemove={removeRefFile}
-                />
-              </div>
+        {/* ── Left: Controls ─────────────────────────────────────────────── */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
 
-              {/* Parameters */}
-              <div className="mb-6 pt-6 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-800 mb-3">3. Parameters</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-xs font-medium text-gray-600 block mb-1">Sensor Configuration</label>
-                    <select 
-                      className="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-space-500 focus:ring-space-500 bg-white"
-                      value={sensor}
-                      onChange={(e) => setSensor(e.target.value)}
-                      disabled={state.status === 'uploading' || state.status === 'processing'}
-                    >
-                      {SENSOR_OPTIONS.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-600 block mb-1">Model Selection</label>
-                    <select 
-                      className="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-space-500 focus:ring-space-500 bg-white"
-                      value={model}
-                      onChange={(e) => setModel(e.target.value)}
-                      disabled={state.status === 'uploading' || state.status === 'processing'}
-                    >
-                      {MODEL_OPTIONS.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-gray-600 block mb-1">Cloud Masking Strategy</label>
-                    <select 
-                      className="w-full text-sm rounded-lg border-gray-300 shadow-sm focus:border-space-500 focus:ring-space-500 bg-white"
-                      value={maskMethod}
-                      onChange={(e) => setMaskMethod(e.target.value)}
-                      disabled={state.status === 'uploading' || state.status === 'processing'}
-                    >
-                      {CLOUD_MASK_METHODS.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
+          {/* Upload card */}
+          <div
+            className="rounded-lg border p-5"
+            style={{ background: "rgba(8,15,30,0.85)", borderColor: "rgba(0,212,255,0.12)" }}
+          >
+            {/* Target tile */}
+            <div className="mb-5">
+              <div className="terminal-label mb-2.5">01 · Target Tile (Cloudy)</div>
+              <UploadZone
+                onDrop={addCloudyFile}
+                file={cloudyFiles[0] || null}
+                onClear={() => { clearCloudy(); reset(); }}
+                error={cloudyError}
+              />
+            </div>
+
+            {/* Reference stack */}
+            <div
+              className="mb-5 pt-5 border-t"
+              style={{ borderColor: "rgba(0,212,255,0.08)" }}
+            >
+              <div className="terminal-label mb-2.5">02 · Reference Frames (Optional)</div>
+              <ReferenceStack
+                references={refFiles}
+                onAdd={addRefFiles}
+                onRemove={removeRefFile}
+              />
+            </div>
+
+            {/* Parameters */}
+            <div
+              className="mb-5 pt-5 border-t"
+              style={{ borderColor: "rgba(0,212,255,0.08)" }}
+            >
+              <div className="terminal-label mb-3">03 · Parameters</div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-[11px] font-mono text-[rgba(226,232,244,0.4)] block mb-1.5 uppercase tracking-widest">
+                    Sensor
+                  </label>
+                  <select
+                    className={selectClass}
+                    value={sensor}
+                    onChange={e => setSensor(e.target.value)}
+                    disabled={isRunning}
+                  >
+                    {SENSOR_OPTIONS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[11px] font-mono text-[rgba(226,232,244,0.4)] block mb-1.5 uppercase tracking-widest">
+                    Model
+                  </label>
+                  <select
+                    className={selectClass}
+                    value={model}
+                    onChange={e => setModel(e.target.value)}
+                    disabled={isRunning}
+                  >
+                    {MODEL_OPTIONS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[11px] font-mono text-[rgba(226,232,244,0.4)] block mb-1.5 uppercase tracking-widest">
+                    Cloud Mask Strategy
+                  </label>
+                  <select
+                    className={selectClass}
+                    value={maskMethod}
+                    onChange={e => setMaskMethod(e.target.value)}
+                    disabled={isRunning}
+                  >
+                    {CLOUD_MASK_METHODS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
+            </div>
 
-              {/* Action Button */}
-              <div className="pt-2">
-                <Button 
-                  className="w-full py-6 text-base"
-                  onClick={handleProcess}
-                  disabled={cloudyFiles.length === 0 || state.status === 'uploading' || state.status === 'processing'}
-                  isLoading={state.status === 'uploading' || state.status === 'processing'}
-                >
-                  {state.status === 'uploading' || state.status === 'processing' 
-                    ? 'Processing...' 
-                    : 'Remove Clouds'}
-                </Button>
-              </div>
-
-            </CardContent>
-          </Card>
+            {/* Run button */}
+            <Button
+              className="w-full h-10"
+              onClick={handleProcess}
+              disabled={cloudyFiles.length === 0 || isRunning}
+              isLoading={isRunning}
+            >
+              {isRunning ? 'Processing…' : 'Run Cloud Removal'}
+            </Button>
+          </div>
         </div>
 
-        {/* Right Column: Output & Visualization */}
-        <div className="lg:col-span-7 flex flex-col space-y-6">
+        {/* ── Right: Output ──────────────────────────────────────────────── */}
+        <div className="lg:col-span-7 flex flex-col gap-4">
           <ProcessingStatus state={state} />
 
           {result ? (
-            <div className="space-y-6 animate-fade-in">
-              <div className="glass-panel p-1 border-gray-200">
-                <CompareSlider 
-                  cloudyImage={cloudyFiles[0].preview} 
-                  cleanImage={result.output_image} 
+            <div className="space-y-4" style={{ animation: "fadeIn 0.4s ease-out both" }}>
+              {/* Compare slider */}
+              <div
+                className="rounded-lg border overflow-hidden"
+                style={{ borderColor: "rgba(0,212,255,0.15)" }}
+              >
+                <CompareSlider
+                  cloudyImage={cloudyFiles[0].preview}
+                  cleanImage={result.output_image}
                   isBase64={true}
                 />
               </div>
-              
+
+              {/* Metrics */}
               <MetricsPanel metrics={result.metrics} />
 
-              <Card className="border-gray-200">
-                <CardContent className="pt-6">
-                  <h3 className="text-sm font-semibold text-gray-800 mb-4">Analysis Layers</h3>
-                  <div className="grid sm:grid-cols-2 gap-6">
-                    <CloudOverlay 
-                      cloudyImage={cloudyFiles[0].preview}
-                      cloudMask={result.cloud_mask}
-                      coverage={result.metrics.cloud_coverage}
-                    />
-                    <div className="bg-gray-50 rounded-xl p-4 flex flex-col justify-center text-sm text-gray-600 border border-gray-100">
-                      <p className="mb-2"><strong>Time taken:</strong> {result.processing_time_ms}ms</p>
-                      <p className="mb-2"><strong>Cloud mask:</strong> Auto-generated</p>
-                      <p className="mb-4"><strong>Model:</strong> {result.model_name || `LISSclear v${result.model_version}`}</p>
-                      
-                      <Button variant="outline" size="sm" onClick={handleReset} className="w-full mt-auto">
-                        Process Another Tile
-                      </Button>
+              {/* Analysis + reset */}
+              <div
+                className="rounded-lg border p-5"
+                style={{ background: "rgba(8,15,30,0.85)", borderColor: "rgba(0,212,255,0.12)" }}
+              >
+                <div className="terminal-label mb-4">Analysis Layers</div>
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <CloudOverlay
+                    cloudyImage={cloudyFiles[0].preview}
+                    cloudMask={result.cloud_mask}
+                    coverage={result.metrics.cloud_coverage}
+                  />
+                  <div
+                    className="rounded p-4 flex flex-col justify-between text-[12.5px] text-[rgba(226,232,244,0.55)]"
+                    style={{
+                      background: "rgba(5,10,20,0.7)",
+                      border: "1px solid rgba(0,212,255,0.08)",
+                    }}
+                  >
+                    <div className="space-y-2 mb-4 font-mono">
+                      <div className="flex justify-between">
+                        <span className="text-[rgba(226,232,244,0.35)]">Time</span>
+                        <span className="text-[#00D4FF]">{result.processing_time_ms} ms</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[rgba(226,232,244,0.35)]">Mask</span>
+                        <span className="text-[rgba(226,232,244,0.7)]">Auto-generated</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[rgba(226,232,244,0.35)]">Model</span>
+                        <span className="text-[rgba(226,232,244,0.7)]">
+                          {result.model_name || `LISSclear v${result.model_version}`}
+                        </span>
+                      </div>
                     </div>
+                    <Button variant="outline" size="sm" onClick={handleReset} className="w-full">
+                      Process Another Tile
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="flex-1 min-h-[500px] border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center text-gray-400 bg-gray-50/50">
-              <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p className="text-sm font-medium">Reconstruction output will appear here</p>
-              <p className="text-xs mt-1">Upload a tile and click Process to begin</p>
+            /* Empty state */
+            <div
+              className="flex-1 min-h-[520px] rounded-lg flex flex-col items-center justify-center"
+              style={{
+                border: "1px dashed rgba(0,212,255,0.15)",
+                background: "rgba(8,15,30,0.4)",
+              }}
+            >
+              <div
+                className="w-16 h-16 rounded-lg flex items-center justify-center mb-5"
+                style={{ background: "rgba(0,212,255,0.06)", border: "1px solid rgba(0,212,255,0.15)" }}
+              >
+                <svg className="w-7 h-7 text-[rgba(0,212,255,0.4)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="terminal-label mb-1">Awaiting input</div>
+              <p className="text-[12px] text-[rgba(226,232,244,0.3)] mt-1">
+                Upload a tile and click Run Cloud Removal
+              </p>
             </div>
           )}
         </div>

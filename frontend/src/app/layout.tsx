@@ -9,21 +9,18 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mon
 
 export const metadata: Metadata = {
   title: "LISSclear | ISRO Cloud Removal Prototype",
-  description: "Multi-temporal conditioned diffusion for cloud removal in LISS-IV satellite imagery. BAH 2026 Problem Statement 2.",
+  description:
+    "Multi-temporal conditioned diffusion for cloud removal in LISS-IV satellite imagery. BAH 2026 Problem Statement 2.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="flex flex-col min-h-screen bg-white">
+      <body className="flex flex-col min-h-screen bg-[#050a14] text-[#e2e8f4]">
         <Navbar />
-        <main className="flex-grow flex flex-col">
-          {children}
-        </main>
+        <main className="flex-grow flex flex-col">{children}</main>
         <Footer />
       </body>
     </html>

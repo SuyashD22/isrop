@@ -17,35 +17,53 @@ export function MetricsPanel({ metrics }: Props) {
       ? value >= info.threshold 
       : value <= info.threshold;
 
+    // Set colors based on the specific metric to match the landing page theme
+    let color = "#00D4FF"; // default cyan
+    if (metricKey === "psnr") color = "#7B61FF"; // purple
+    if (metricKey === "sam") color = "#00E5A0"; // green
+    if (metricKey === "ndvi_mae") color = "#F59E0B"; // amber
+
     return (
-      <div className="flex flex-col p-4 rounded-xl bg-gray-50/80 border border-gray-100 shadow-sm relative overflow-hidden group">
-        {/* Status accent line */}
-        <div className={cn(
-          "absolute top-0 left-0 w-full h-1",
-          isGood ? "bg-green-500" : "bg-amber-400"
-        )} />
+      <div 
+        className="flex flex-col p-4 rounded bg-[rgba(8,15,30,0.85)] border transition-all duration-300 relative overflow-hidden group"
+        style={{ borderColor: "rgba(0,212,255,0.12)" }}
+      >
+        {/* Glow effect on hover */}
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse at 50% 0%, ${color}15 0%, transparent 70%)`,
+          }}
+        />
         
-        <div className="flex items-center justify-between mb-2 mt-1">
+        <div className="flex items-center justify-between mb-3 relative z-10">
           <div className="flex items-center space-x-1.5">
-            <span className="text-sm font-medium text-gray-600">{info.label}</span>
+            <span className="terminal-label" style={{ color: `${color}99` }}>
+              {info.label}
+            </span>
             <Tooltip content={info.description}>
-              <Info size={14} className="text-gray-400 cursor-help hover:text-space-500 transition-colors" />
+              <Info size={12} style={{ color: `${color}60` }} className="cursor-help hover:opacity-100 transition-opacity" />
             </Tooltip>
           </div>
           <div className={cn(
-            "text-[10px] font-bold px-1.5 py-0.5 rounded",
-            isGood ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
+            "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded uppercase tracking-wider",
+            isGood 
+              ? "bg-[rgba(0,229,160,0.1)] text-[#00E5A0] border border-[rgba(0,229,160,0.2)]" 
+              : "bg-[rgba(245,158,11,0.1)] text-[#F59E0B] border border-[rgba(245,158,11,0.2)]"
           )}>
-            {isGood ? 'PASS' : 'WARN'}
+            {isGood ? 'PASS ✓' : 'WARN !'}
           </div>
         </div>
         
-        <div className="flex items-baseline space-x-1 mt-auto">
-          <span className="text-2xl font-bold text-gray-900 tracking-tight">
+        <div className="flex items-baseline space-x-1 mt-auto relative z-10">
+          <span 
+            className="text-2xl font-bold font-mono tracking-tight"
+            style={{ color }}
+          >
             {info.format(value).replace(info.unit, '').trim()}
           </span>
           {info.unit && (
-            <span className="text-xs font-semibold text-gray-500">{info.unit}</span>
+            <span className="text-[11px] font-mono text-[rgba(226,232,244,0.4)] ml-1">{info.unit}</span>
           )}
         </div>
       </div>

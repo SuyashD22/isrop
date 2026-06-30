@@ -16,7 +16,7 @@ export function CompareSlider({ cloudyImage, cleanImage }: Props) {
   };
 
   return (
-    <div className="relative rounded-xl overflow-hidden shadow-glass border border-gray-200/50 group">
+    <div className="relative rounded overflow-hidden group bg-[rgba(5,10,20,1)]">
       <ReactCompareSlider
         boundsPadding={0}
         itemOne={
@@ -35,14 +35,14 @@ export function CompareSlider({ cloudyImage, cleanImage }: Props) {
         }
         style={{ width: '100%', height: '400px' }}
         position={50}
-        className="w-full h-full bg-gray-900"
+        className="w-full h-full bg-[#050a14]"
       />
       
       {/* Labels */}
-      <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
-        Input
+      <div className="absolute top-4 left-4 bg-[rgba(5,10,20,0.85)] border border-[rgba(0,212,255,0.15)] text-[rgba(226,232,244,0.9)] backdrop-blur-md text-[10px] font-mono tracking-widest uppercase px-3 py-1.5 rounded pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+        Target Tile
       </div>
-      <div className="absolute top-4 right-4 bg-space-600/80 backdrop-blur-md text-white text-xs font-semibold px-3 py-1.5 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-glow-blue">
+      <div className="absolute top-4 right-4 bg-gradient-to-r from-[#00D4FF]/90 to-[#7B61FF]/90 border border-[rgba(0,212,255,0.4)] backdrop-blur-md text-[#050a14] text-[10px] font-mono font-bold tracking-widest uppercase px-3 py-1.5 rounded pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_20px_rgba(0,212,255,0.4)]">
         Reconstructed
       </div>
     </div>

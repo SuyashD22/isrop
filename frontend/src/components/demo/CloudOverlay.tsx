@@ -13,7 +13,7 @@ export function CloudOverlay({ cloudyImage, cloudMask, coverage }: Props) {
 
   return (
     <div className="flex flex-col space-y-3">
-      <div className="relative w-full aspect-square rounded-xl overflow-hidden border border-gray-200 shadow-sm group bg-gray-900">
+      <div className="relative w-full aspect-square rounded border border-[rgba(0,212,255,0.2)] shadow-sm group bg-[rgba(5,10,20,1)] overflow-hidden">
         {/* Base cloudy image */}
         <img 
           src={cloudyImage.startsWith('blob:') ? cloudyImage : `data:image/png;base64,${cloudyImage}`} 
@@ -22,7 +22,7 @@ export function CloudOverlay({ cloudyImage, cloudMask, coverage }: Props) {
           style={{ opacity: showMask ? 0.4 : 1 }}
         />
         
-        {/* Cloud mask overlay (red) */}
+        {/* Cloud mask overlay (red/magenta glow) */}
         <img 
           src={`data:image/png;base64,${cloudMask}`} 
           alt="Cloud mask" 
@@ -30,21 +30,21 @@ export function CloudOverlay({ cloudyImage, cloudMask, coverage }: Props) {
             "absolute inset-0 w-full h-full object-cover mix-blend-screen transition-opacity duration-300",
             showMask ? "opacity-100" : "opacity-0"
           )}
-          style={{ filter: 'invert(20%) sepia(90%) saturate(6000%) hue-rotate(350deg) brightness(100%) contrast(150%)' }}
+          style={{ filter: 'invert(20%) sepia(90%) saturate(6000%) hue-rotate(300deg) brightness(120%) contrast(150%)' }}
         />
 
         {/* Toggle button */}
         <button
           onClick={() => setShowMask(!showMask)}
-          className="absolute bottom-3 right-3 bg-black/60 hover:bg-black/80 backdrop-blur-md text-white p-2 rounded-lg transition-colors border border-white/20 shadow-lg"
+          className="absolute bottom-2 right-2 bg-[rgba(5,10,20,0.8)] hover:bg-[rgba(0,212,255,0.15)] backdrop-blur-md text-[#00D4FF] p-2 rounded transition-colors border border-[rgba(0,212,255,0.2)] shadow-[0_0_15px_rgba(0,212,255,0.2)]"
           title="Toggle Cloud Mask Overlay"
         >
-          {showMask ? <EyeOff size={18} /> : <Eye size={18} />}
+          {showMask ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>
         
         {/* Coverage badge */}
-        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border border-white/10">
-          {(coverage * 100).toFixed(1)}% Coverage
+        <div className="absolute top-2 left-2 bg-[rgba(5,10,20,0.85)] backdrop-blur-md text-[rgba(226,232,244,0.9)] px-2 py-1 rounded text-[10px] font-mono tracking-wider border border-[rgba(0,212,255,0.15)] shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+          {(coverage * 100).toFixed(1)}% COVERAGE
         </div>
       </div>
     </div>
