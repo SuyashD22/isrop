@@ -1,0 +1,64 @@
+# ─── Data (never commit raw/processed satellite tiles) ───────────────────────────
+data/raw/
+data/processed/
+data/checkpoints/
+
+# ─── Model weights ───────────────────────────────────────────────────────────────
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# ─── Satellite imagery ───────────────────────────────────────────────────────────
+*.tif
+*.tiff
+*.img
+*.hdf5
+*.h5
+*.nc
+
+# ─── Python ──────────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# ─── Jupyter ─────────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ─── Environment ─────────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.production
+
+# ─── Node / Frontend ─────────────────────────────────────────────────────────────
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# ─── OS ──────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ─── Docker ──────────────────────────────────────────────────────────────────────
+.dockerignore
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+
+# --- Testing Outputs ---------------------------------------------------------
+backend/tests/outputs/
+

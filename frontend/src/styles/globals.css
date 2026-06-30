@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #020817;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Custom scrollbar for better aesthetics */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+  }
+
+  /* Glassmorphism panel base */
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-glass rounded-2xl;
+  }
+
+  /* Text gradients */
+  .text-gradient-isro {
+    @apply bg-clip-text text-transparent bg-space-gradient;
+  }
+  .text-gradient-earth {
+    @apply bg-clip-text text-transparent bg-earth-gradient;
+  }
+}
+
+/* react-compare-slider overrides */
+.__rcs-handle-button {
+  box-shadow: 0 0 15px rgba(0,0,0,0.3) !important;
+  border: 2px solid white !important;
+}
+.__rcs-handle-line {
+  box-shadow: 0 0 5px rgba(0,0,0,0.5) !important;
+}

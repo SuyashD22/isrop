@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lissclear_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/checkpoints:/app/checkpoints:ro
+    environment:
+      - MODEL_CHECKPOINT_PATH=/app/checkpoints/inpainting/best_model.pt
+      - CLOUD_SEG_CHECKPOINT_PATH=/app/checkpoints/cloud_seg/best_model.pt
+      - DEVICE=cpu           # Change to 'cuda' if host has GPU
+      - FRONTEND_URL=http://localhost:3000
+      - N_REFERENCE_FRAMES=3
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        # Uncomment below if host has NVIDIA GPU:
+        # reservations:
+        #   devices:
+        #     - driver: nvidia
+        #       count: 1
+        #       capabilities: [gpu]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lissclear_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  default:
+    name: lissclear_network
