@@ -9,6 +9,13 @@ data/checkpoints/
 *.ckpt
 *.safetensors
 
+# Exception: model files baked into the Docker image for Render deployment
+# These are committed so Render's Docker build includes them (Option A)
+!backend/models/*.pth
+!backend/models/*.pt
+!backend/models/*.hdf5
+!backend/models/*.h5
+
 # ─── Satellite imagery ───────────────────────────────────────────────────────────
 *.tif
 *.tiff
@@ -16,6 +23,10 @@ data/checkpoints/
 *.hdf5
 *.h5
 *.nc
+
+# Exception: model weights in backend/models/ (see exception block above)
+!backend/models/*.hdf5
+!backend/models/*.h5
 
 # ─── Python ──────────────────────────────────────────────────────────────────────
 __pycache__/

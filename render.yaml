@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: lissclear-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+
+    # Model files are baked into the Docker image (backend/models/*.pth, *.hdf5)
+    # No external model hosting (HuggingFace, S3, etc.) needed.
+    # Render injects PORT automatically — the Dockerfile CMD uses ${PORT:-8000}
+
+    envVars:
+      - key: FRONTEND_URL
+        value: https://your-app.vercel.app   # ← replace with actual Vercel URL after deploy
+
+      - key: CORS_ORIGINS
+        value: '["https://your-app.vercel.app"]'  # ← replace with actual Vercel URL
+
+      - key: MODELS_DIR
+        value: ./models
+
+      - key: DEVICE
+        value: cpu
+
+      - key: N_REFERENCE_FRAMES
+        value: "3"
+
+      - key: MAX_TILE_SIZE_MB
+        value: "50"
+
+      - key: IMAGE_SIZE
+        value: "256"
+
+      - key: DIFFUSION_TIMESTEP
+        value: "50"
+
+    healthCheckPath: /api/health
+
+    # Render free tier has 512 MB RAM; upgrade plan for heavy model inference
+    plan: starter

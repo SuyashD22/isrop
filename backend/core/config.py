@@ -34,7 +34,7 @@ class Settings(BaseSettings):
 
     # ── CORS ──────────────────────────────────────────────────────────────────
     cors_origins: List[str] = Field(
-        default=["http://localhost:3000", "https://lissclear.vercel.app"]
+        default=["http://localhost:3000"]
     )
 
     # ── Inference ─────────────────────────────────────────────────────────────

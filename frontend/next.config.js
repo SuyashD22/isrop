@@ -11,7 +11,12 @@ const nextConfig = {
     ];
   },
   images: {
-    domains: ['localhost'],
+    remotePatterns: [
+      // Local development
+      { protocol: 'http', hostname: 'localhost' },
+      // Render-hosted backend (production)
+      { protocol: 'https', hostname: '**.onrender.com' },
+    ],
   },
 };
 
