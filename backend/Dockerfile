@@ -2,19 +2,11 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies for GDAL/rasterio
+# Install system dependencies (only curl is needed for healthcheck)
+# OpenCV is headless, so it doesn't need libgl1/libglib
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gdal-bin \
-    libgdal-dev \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
     curl \
     && rm -rf /var/lib/apt/lists/*
-
-# Set GDAL environment
-ENV GDAL_CONFIG=/usr/bin/gdal-config
-ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
-ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # Install Python dependencies
 COPY requirements.txt .
